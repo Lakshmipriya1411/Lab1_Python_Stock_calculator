@@ -1,0 +1,156 @@
+{% extends "stocks/layout.html" %}
+{% block title %}
+Home
+{% endblock %}
+{% block content %}
+<div class="content">    
+   <section style="padding-left:50px;margin-top:-50px;">     
+      <div class="row">               
+          <div class="row align-items-center">
+            <div class="col-lg-7 mb-5 mb-lg-0">
+              <h3 class="mb-3">Fill the stock details</h3>
+              <form class="border-right pr-5 mb-5" method="post" id="stock-form" name="stock-form">{% csrf_token %}               
+               <div class="row">
+                  <div class="col-md-6 form-group">
+                    <input type="text" class="form-control" name="stocksym" id="stocksym" placeholder="Stock symbol">
+                  </div>
+                  <div class="col-md-6 form-group">
+                    <input type="text" class="form-control" name="allot" id="allot" placeholder="Allotment">
+                  </div>
+                  <div class="col-md-6 form-group">
+                    <input type="text" class="form-control" name="fshare" id="fshare" placeholder="Final share price">
+                  </div>
+                  <div class="col-md-6 form-group">
+                    <input type="text" class="form-control" name="scomm" id="scomm" placeholder="Sell commission">
+                  </div>
+                  <div class="col-md-6 form-group">
+                    <input type="text" class="form-control" name="ishare" id="ishare" placeholder="Initial share price">
+                  </div>
+                  <div class="col-md-6 form-group">
+                    <input type="text" class="form-control" name="bcomm" id="bcomm" placeholder="Buy commission">
+                  </div>
+                  <div class="col-md-6 form-group">
+                    <input type="text" class="form-control" name="cgtaxrate" id="cgtaxrate" placeholder="Capital gain taxrate">
+                  </div>
+                </div>
+               
+                <div class="row">
+                  <div class="col-md-6">
+                    <input type="submit" value="Calculate" class="btn btn-secondary rounded-0 py-2 px-4">
+                    <span class="submitting"></span>
+                  </div>
+                  <div class="col-md-6">
+                    <input type="submit" value="Clear" class="btn btn-secondary rounded-0 py-2 px-4">
+                    <span class="submitting"></span>
+                  </div>
+                </div> 
+              </form>
+
+              <div id="form-message-warning mt-4"></div> 
+              <div id="form-message-success">
+                Your message was sent, thank you!
+              </div>
+            </div>
+            <div class="col-lg-4 mb-5 mb-lg-0 profitreport" style="display:none">
+              <h3 class="mb-3">Profit Report</h3>
+                           
+              <div class="row">
+                <div class="col-md-6 form-group">
+                  <label>Proceeds ($)</label>
+                </div>
+                <div class="col-md-6 form-group">
+                  <label id="lblproceeds">{{instance.proceeds}}</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 form-group">
+                  <label>Cost ($)</label>
+                </div>
+                <div class="col-md-6 form-group">
+                  <label id="lblcost"></label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 form-group">
+                  <label>Net Profit ($)</label>
+                </div>
+                <div class="col-md-6 form-group">
+                  <label id="lblprofit"></label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 form-group">
+                  <label>Return on investment (%)</label>
+                </div>
+                <div class="col-md-6 form-group">
+                  <label id="lblroi"></label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 form-group">
+                  <label>Break even price ($)</label>
+                </div>
+                <div class="col-md-6 form-group">
+                  <label id="lblbep"></label>
+                </div>
+              </div>
+              
+              
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </section>
+
+<script>
+    /*
+        On submiting the form, send the POST ajax
+        request to server and after successfull submission
+        display the object.
+    */
+    $("#stock-form").submit(function (e) {
+        // preventing from page reload and default actions
+        e.preventDefault();
+        // serialize the data for sending the form data.
+        var serializedData = $(this).serialize();
+        // make POST ajax call
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'post_stock' %}",
+            //data: serializedData,
+            data:{
+                    stocksym:$('#stocksym').val(),
+                    allotment:$('#allot').val(),
+                    final_share_price:$('#fshare').val(),
+                    sell_comm: $('#scomm').val(),
+                    initial_share_price:$('#ishare').val(),
+                    buy_comm:$('#bcomm').val(),
+                    capital_gain_tax_rate:$('#cgtaxrate').val(),
+                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                },
+            success: function (response) {
+                // on successfull creating object
+                // 1. clear the form.
+               // $("#stock-form").trigger('reset');
+                // 2. focus to nickname input 
+                //$("#id_nick_name").focus();
+
+                // display the newly friend to table.
+                var instance = response.instance;   
+                $(".profitreport").show();
+                $("#lblproceeds").text(instance.proceeds);  
+                $("#lblcost").text(instance.cost);  
+                $("#lblprofit").text(instance.net_profit);  
+                $("#lblroi").text(parseFloat(instance.return_on_investment).toFixed(2));  
+                $("#lblbep").text(instance.break_even_price);  
+                         
+            },
+            error: function (response) {
+                // alert the error if any error occured
+                alert(response["responseJSON"]["error"]);
+            }
+        })
+    })
+</script>
+{% endblock %}

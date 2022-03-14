@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>{% block title %}Stock Profit Calculator{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'stocks/msg.css' %}"/>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,700,900&display=swap" rel="stylesheet">
+
+   <link rel="stylesheet" href="{% static 'stocks/fonts/style.css' %}">
+    <link rel="stylesheet" href="{% static 'stocks/owl.carousel.min.css' %}">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'stocks/bootstrap.min.css' %}">    
+    <!-- Style -->
+    <link rel="stylesheet" href="{% static 'stocks/style.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="navbar"><a href="#" class="navbar-brand">STOCK PROFIT CALCULATOR</a></div>
+<div class="body-content">
+    {% block content %}
+    {% endblock %}
+    <hr/>
+    <footer>
+       
+    </footer>
+</div>
+</body>
+</html>
